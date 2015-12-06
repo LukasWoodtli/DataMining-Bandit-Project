@@ -1,12 +1,14 @@
 import sys
 import policy
 
-if __name__ == "__main__":
 
-    if (len(sys.argv) != 3):
+
+def main(args):
+
+    if (len(args) != 3):
         raise Exception("Usage: ./evaluator.py articles_file log_file")
 
-    with file(sys.argv[1]) as inf:
+    with file(args[1]) as inf:
         articles = []
         for line in inf:
             features = line.strip().split(" ")
@@ -19,7 +21,7 @@ if __name__ == "__main__":
     total_evaluated = 0
     n_lines = 0
 
-    with file(sys.argv[2]) as inf:
+    with file(args[2]) as inf:
         for line in inf:
             n_lines += 1
             logline = line.strip().split()
@@ -40,3 +42,7 @@ if __name__ == "__main__":
 
         print "Evaluated %d/%d lines." % (total_evaluated, n_lines)
         print "CTR=%f" % (float(score) / total_evaluated)
+
+
+if __name__ == "__main__":
+    main(args)
