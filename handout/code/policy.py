@@ -17,8 +17,11 @@ class Article:
 
 AllArticles = {}
 
-
+# Local score
 # Random CTR: max 0.06
+# LinUCB: CTR=0.066667
+
+
 # Baseline Hard 	0.065825
 # Baseline Easy 	0.044115
 
