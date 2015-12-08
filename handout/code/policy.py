@@ -1,52 +1,58 @@
 import numpy.random
 import numpy as np
-from collections import  namedtuple
 from numpy.linalg import inv
 ALPHA = 0.5
 
 DIMENSION = 6
 
-M = {}
-w = {}
-b = {}
-art_features = {}
 
+class Article:
+    def __init__(self, M=np.identity(DIMENSION),
+                 w=np.zeros(DIMENSION), b=np.zeros(DIMENSION),
+                 art_features=None):
+        self.M = M
+        self.w = w
+        self.b = b
+        self.art_features = art_features
+
+AllArticles = {}
+
+
+# Random CTR: max 0.06
+# Baseline Hard 	0.065825
+# Baseline Easy 	0.044115
 
 
 BestChoice = None
 z_t = None
 
 def set_articles(articles):
-    global M, w, b, art_features
+    global AllArticles
     for x in articles:
         art = x[0]
         features = x[1:]
-        M[art] = np.identity(DIMENSION)
-        w[art] = np.zeros(DIMENSION)
-        b[art] = np.zeros(DIMENSION)
-        art_features[art] = features
-
+        article = Article(art_features=features)
+        AllArticles[art] = article
 
 def update(reward):
-    global z_t, ArticleParams
-    if reward == -1:
-        return
-    M[BestChoice] += np.dot(z_t.transpose(), z_t)
-    b[BestChoice] += np.multiply(z_t, reward)
-
+    global AllArticles
+    art = AllArticles[BestChoice]
+    art.M = art.M + np.dot(z_t.transpose(), z_t)
+    art.b = art.b + np.multiply(z_t, reward)
+    AllArticles[BestChoice] = art
 
 def reccomend(time, user_features, articles):
     #return numpy.random.choice(articles, size=1)
-    global M, b, w, BestChoice, z_t
+    global BestChoice, z_t, AllArticles
     MaxUCB = 0
 
     for art in articles:
-        if not art in M:
-            M[art] = np.identity(DIMENSION)
-            b[art] = np.zeros(DIMENSION)
-            w[art] = np.zeros(DIMENSION)
+        if not art in AllArticles:
+            AllArticles[art] = Article()
         z_t = np.array(user_features)
-        UCB = np.inner(w[art].transpose(), z_t) + ALPHA * np.sqrt(np.dot(np.dot(z_t.transpose(), inv(M[art])), z_t))
+        w = AllArticles[art].w
+        M = AllArticles[art].M
+        UCB = np.inner(w.transpose(), z_t) + ALPHA * np.sqrt(np.dot(np.dot(z_t.transpose(), inv(M)), z_t))
         if UCB > MaxUCB:
             MaxUCB = UCB
             BestChoice = art
