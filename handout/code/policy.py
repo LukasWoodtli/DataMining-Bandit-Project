@@ -11,6 +11,7 @@ class Article:
                  w=np.zeros(DIMENSION), b=np.zeros(DIMENSION),
                  art_features=None):
         self.M = M
+        self.M_inv = inv(M)
         self.w = w
         self.b = b
         self.art_features = art_features
@@ -32,30 +33,28 @@ z_t = None
 def set_articles(articles):
     global AllArticles
     for x in articles:
-        art = x[0]
-        features = x[1:]
+        features = articles[x]
         article = Article(art_features=features)
-        AllArticles[art] = article
+        AllArticles[x] = article
 
 def update(reward):
     global AllArticles
-    art = AllArticles[BestChoice]
-    art.M = art.M + np.dot(z_t.transpose(), z_t)
-    art.b = art.b + np.multiply(z_t, reward)
-    AllArticles[BestChoice] = art
-
+    AllArticles[BestChoice].M = AllArticles[BestChoice].M + np.dot(z_t, z_t)
+    AllArticles[BestChoice].M_inv = inv(AllArticles[BestChoice].M)
+    AllArticles[BestChoice].b = AllArticles[BestChoice].b + np.multiply(z_t, reward)
+    
 def reccomend(time, user_features, articles):
-    #return numpy.random.choice(articles, size=1)
     global BestChoice, z_t, AllArticles
-    MaxUCB = 0
-
+    MaxUCB = 0   # int.inf
+    z_t = np.array(user_features)
+    
     for art in articles:
         if not art in AllArticles:
             AllArticles[art] = Article()
-        z_t = np.array(user_features)
-        w = AllArticles[art].w
-        M = AllArticles[art].M
-        UCB = np.inner(w.transpose(), z_t) + ALPHA * np.sqrt(np.dot(np.dot(z_t.transpose(), inv(M)), z_t))
+        
+        # alles was nicht von y abhaengt vorher berechnen
+        AllArticles[art].w = np.inner(AllArticles[art].M_inv, AllArticles[art].b)
+        UCB = np.dot(AllArticles[art].w, z_t) + ALPHA * np.sqrt(np.dot(np.dot(z_t, AllArticles[art].M_inv), z_t))
         if UCB > MaxUCB:
             MaxUCB = UCB
             BestChoice = art
