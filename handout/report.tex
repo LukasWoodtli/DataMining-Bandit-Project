@@ -39,29 +39,23 @@
 The goal of this project was to learn a policy that explores and exploits available user choices for yahoo news articles. This was done in order to learn user preferences and recommend other relevant articles to the users.
 
 \subsection{Approach of the Team}
-In this project the team, that the first approach to follow was to implement the LinUCB algorithm that is described in the lecture slides. This version includes the user features into its evaluation. (This should not be confused with the version in the original paper [Li et al WWW'10],  which uses the articles instead.)
+In this project the team decided that the first approach to follow was to implement the LinUCB algorithm which is described in the lecture slides. This version includes the user features into its evaluation. This should not be confused with the version in the original paper [Li et al WWW'10],  which uses the articles instead.
 
-The easier $\epsilon$-greedy approach was declined from the beginning, since it was assumed that it will never be good enough to reach the desired result.
+The easier $\epsilon$-greedy approach was declined from the beginning, since it was assumed that it will never be good enough to surpass the baseline hard.
 The algorithm was then implemented iteratively until it worked properly.
+Performance was an important factor to consider. While the first naive implementation did not terminate because of a timeout, the program ran through fast enough after several optimizations. It was necessary to export as much code as possible to the update function instead of executing it for each step in the recommend function. Especially calculating the matrix inverse in the update function has a significant impact onto the performance.
 
-Performance was an important element to consider. While the first naive implementation did not run through because of an timeout occured, the program ran through fast enough after several optimizations. It was necessary to export as much code as possible to the update function instead of executing it each step. Especially calculating the matrix inverse has a signifcant impact on the performance.
-
-After the algorithm was optimized to run in a reasonable time it needed to be optimized to provide a good result. The main parameter for otimizing the prediction result was $\alpha$. The ideal value for the parameter was evaluated mainly by trial.
-
-
-TODO.... abschnitt über alpha verbessern!
-
-
+After the algorithm was optimized to run in a reasonable time it needed to be optimized to provide a good result. The main parameter for optimizing the prediction result was $\alpha$. The ideal value for the parameter was determined mainly by trial. A problem was, that the local test template did not give usable feedback and the only way to get feedback was through an online-submit. Since the basic functionality of the LinUCB algorithm was actually the same for multiple groups, we divided the cross testing for alpha to end up with a value of around 0.27.
 
 
 \subsection{Environment}
-In contrast to the previous projects, the code for this one was not executed within a map-reduce environment. There was only a single policy file, in which the heuristic to predict the user click behavior had to be implemented.\\
-As training data, log data of yahoo is available. Since we train our model on real log data, it is not possible to get a feedback for each prediction. The reason for this is that yahoo might have displayed another article. Like this we could have gotten a feedback for the other prediction but not for the current one.
+In contrast to the previous projects, the code for this one was not executed within a map-reduce environment. There was only a single policy file, in which the heuristic to predict the user click behaviour had to be implemented.\\
+As training data, log data of yahoo was available. Training the model on real log data, it is of course not possible to get a feedback for each prediction. The reason for this is that yahoo might have displayed another article. Like this we could have gotten a feedback for the other prediction but not for the one we made.
 
 
-\subsection{Posslible Improvements}
-A possible improvement would be the implementation of the Hybrid LinUCB algorithm. It has the same runtime complexity as the standard LinUCB algorithm, but it would make it possible to exloit the information of the user and article features together.
+\subsection{Possible Improvements}
+A possible improvement would be the implementation of the Hybrid LinUCB algorithm. It has the same runtime complexity as the standard LinUCB algorithm, but it captures both separate and shared effects.
 
 \subsection{Conclusion}
-This project shows that sometimes a proper tweaking of the parameter variables might be equaly helpfully like using an overall more complex algorithm. It reveals that proposals can be made, using a rather easy algorithm.
+This project shows that sometimes a proper tweaking of the parameter variables might be equally helpful as using an overall more complex algorithm. It reveals that proper proposals can be made, using a rather easy algorithm.
 \end{document} 
